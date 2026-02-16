@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+    <style>
+        body {
+            min-height: 100vh;
+            display: grid;
+            place-items: center;
+            background-color: #280137;
+        }
+
+        .container {
+            display: grid;
+            place-items: center;
+            background: rgba(255, 255, 255, 0.15);
+            padding: 1.5rem;
+            gap: 1rem;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.55);
+            color: white;
+        }
+        
+        .counter {
+        font-size: 2rem;
+        font-weight: bold;
+        }
+
+        .counter.bump {
+            animation: bump 0.2s ease;
+        }
+
+        @keyframes bump {
+            0% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.25);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+       
+        .button-wrapper {
+            position: relative;
+            display: inline-flex;
+            gap: 10px;
+        }
+
+        button {
+            font-size: 17px;
+            padding: 0.6em 2.2em;
+            border: none;
+            background: goldenrod;
+            border-radius: 6px;
+            cursor: pointer;
+
+            box-shadow: 2px 2px 6px rgba(0,0,0,0.3);
+            transition: transform 0.1s ease, box-shadow 0.1s ease;
+        }
+
+        button:hover {
+            transform: translateY(-1px);
+            box-shadow: 4px 4px 10px rgba(0,0,0,0.4);
+        }
+
+        button:active {
+            transform: translateY(0);
+            box-shadow: 1px 1px 4px rgba(0,0,0,0.3);
+        }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+            <p class="counter"></p>
+        <div class="button-wrapper">
+            <button id="add">+1</button>
+            <button id="remove">-1</button>
+            <button id="reset">Reset</button>
+        </div>
+    </div>
+</body>
+<script>
+    let count = 0;
+    const counter = document.querySelector(".counter");
+
+    function animateCounter() {
+    counter.classList.remove("bump");
+    void counter.offsetWidth;
+    counter.classList.add("bump");
+    }
+
+    function updateCount(value) {
+        counter.textContent = value;
+        if (value > 0) {
+            counter.style.color = "lime";
+        } else if (value < 0) {
+            counter.style.color = "red";
+        } else {
+            counter.style.color = "white";
+        }
+        animateCounter();
+    }
+
+    document.getElementById("add").addEventListener("click", () => {
+        updateCount(++count);
+    });
+
+    document.getElementById("remove").addEventListener("click", () => {
+        updateCount(--count);
+    });
+
+    document.getElementById("reset").addEventListener("click", () => {
+        count = 0;
+        updateCount(count);
+    });
+
+    updateCount(count);
+</script>
+</html>

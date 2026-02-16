@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        body {
+            min-height: 100vh;
+            background-color: rgb(51, 51, 51);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .container {
+            box-sizing: border-box;
+            padding-inline-start: 10px;
+            padding-inline-end: 10px;
+            background-color: white;
+            box-shadow: rgba(0, 0, 0, 0.25) 0px 54px 55px, rgba(0, 0, 0, 0.12) 0px -12px 30px, rgba(0, 0, 0, 0.12) 0px 4px 6px, rgba(0, 0, 0, 0.17) 0px 12px 13px, rgba(0, 0, 0, 0.09) 0px -3px 5px;
+        }
+
+        .form {
+        --width-of-input: 200px;
+        --border-height: 1px;
+        --border-before-color: rgba(221, 221, 221, 0.39);
+        --border-after-color: #5891ff;
+        --input-hovered-color: #4985e01f;
+        position: relative;
+        width: var(--width-of-input);
+        }
+
+        .input {
+        color: #fff;
+        font-size: 0.9rem;
+        background-color: transparent;
+        width: 100%;
+        box-sizing: border-box;
+        padding-inline: 0.5em;
+        padding-block: 0.7em;
+        border: none;
+        border-bottom: var(--border-height) solid var(--border-before-color);
+        }
+
+        .input-border {
+        position: absolute;
+        background: var(--border-after-color);
+        width: 0%;
+        height: 2px;
+        bottom: 0;
+        left: 0;
+        transition: 0.3s;
+        }
+
+        input:hover {
+        background: var(--input-hovered-color);
+        }
+
+        input:focus {
+        outline: none;
+        }
+
+        input:focus ~ .input-border {
+        width: 100%;
+        }
+
+        button {
+            background-color: white;
+            border: none;
+            border-radius: 6px;
+            box-sizing: border-box;
+            padding: 10px;
+        }
+
+        button:hover {
+            cursor: pointer;
+            background-color: #5891ff;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="container" id="output">
+    </div>
+    <div class="form">
+        <input class="input" placeholder="Type your city" required="" type="text" id="cityInput">
+        <span class="input-border"></span>
+    </div>
+    <button id="getData" onclick="getData()">Get weather!</button>
+</body>
+<script>
+    const apiKey = env.API_KEY;
+    const cityInput = document.getElementById("cityInput")
+    const limit = 1;
+    const containerOutput = document.getElementById("output");
+    
+    async function getData() {
+        const cityName = cityInput.value;
+        const url = `http://api.openweathermap.org/geo/1.0/direct?q=${cityName}&limit=${limit}&appid=${apiKey}`;
+        try {
+            const response = await fetch(url);
+            if (!response.ok) {
+            throw new Error(`Response status: ${response.status}`);
+            }
+
+            const result = await response.json();
+            console.log(result);
+
+           if (!result.length) {
+                containerOutput.innerHTML = "City not found.";
+                return;
+            }
+
+            const lat = result[0].lat;
+            const lon = result[0].lon;
+            const units = "metric";
+
+            if (result) {
+                const weatherUrl = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${apiKey}&units=${units}`;
+                try {
+                    const weatherResponse = await fetch(weatherUrl)
+                    if (!weatherResponse.ok) {
+                        throw new Error(`Response status: ${weatherResponse.status}`);
+                    }
+
+                    const weatherData = await weatherResponse.json();
+                    displayWeather(weatherData);
+                    console.log(weatherData);
+                } catch (error) {
+                    console.error(error.message)
+                }
+                }
+        } catch (error) {
+            console.error(error.message);
+        }
+    }
+
+    const displayWeather = (weatherData) => {
+        containerOutput.innerHTML = `Current Weather: ${weatherData.weather[0].main} | Current Temperature: ${weatherData.main.temp}°C`;
+    }
+</script>
+</html>

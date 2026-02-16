@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Roboto, sans-serif;
+        }
+
+        body {
+            background-color: #383739;
+            color: #00c9a9;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            gap: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 500px;
+            min-height: 400px;
+            padding: 30px;
+            background-color: #4e5057;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+
+        #inputNotes {
+            width: 100%;
+            padding: 12px;
+            background: #383739;
+            border: 1px solid #00c9a9;
+            border-radius: 6px;
+            color: white;
+            outline: none;
+        }
+
+        #todosList {
+            width: 100%;
+            list-style: none;
+        }
+
+        #todosList li {
+            background: #383739;
+            margin-bottom: 10px;
+            padding: 15px;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: 0.2s;
+        }
+
+        #todosList i {
+            font-style: normal;
+            font-size: 12px;
+            cursor: pointer;
+            margin-left: 10px;
+            padding: 5px 8px;
+            border-radius: 4px;
+            background: rgba(0, 201, 169, 0.1);
+        }
+
+        #todosList i:hover {
+            background: #00c9a9;
+            color: #383739;
+        }
+
+        .line-through {
+            text-decoration: line-through;
+            opacity: 0.6;
+        }
+
+        #btns-addMenu {
+            display: flex;
+            gap: 10px;
+        }
+
+        button {
+            cursor: pointer;
+            padding: 10px 20px;
+            border-radius: 8px;
+            border: 2px solid #00c9a9;
+            background: transparent;
+            color: #00c9a9;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+
+        button:hover {
+            background: #00c9a9;
+            color: #383739;
+        }
+
+        #addMenu {
+            display: none;
+            width: 300px;
+            min-height: 90px;
+            justify-content: center;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="container" id="mainMenu">
+        <h2>Todo List</h2>
+        <!-- <div class="header"> -->
+            <!-- <div id="bar-wrapper">
+                <input placeholder="Search note..." id="search-bar">
+                <i id="search-icon">ico</i>
+            </div>
+                <label for="filter">Category:</label>
+                <select name="filter" id="filter">
+                    <option value="All">All</option>
+                    <option value="Done">Done</option>
+                    <option value="ToDo">ToDo</option>
+                </select> -->
+        <!-- </div> -->
+        <div id="todos-wrapper">
+            <ul id="todosList">
+            </ul>
+        </div>
+            <div class="btns-primary-wrapper">
+                <button class="btn-primary" id="add" onclick="addMenu()">+</button>
+            </div>
+        </div>
+
+    <div class="container" id="addMenu">
+        <input placeholder="Input your notes here." id="inputNotes">
+        <div id="btns-addMenu">
+            <button class="btn-secondary" onclick="cancelItem()">Cancel</button>
+            <button class="btn-secondary" onclick="addItem()">Apply</button>
+        </div>
+    </div>
+</body>
+<script>
+    const input = document.getElementById("inputNotes");
+    const todosList = document.getElementById("todosList");
+    let todosArray = [];
+
+    async function fetchTodos() {
+        try {
+            const response = await fetch("http://localhost:3000/api/todos");
+            todosArray = await response.json();
+            console.log(todosArray);
+            todosArray.forEach(todo => renderTodo(todo));
+        } catch (error) {
+            console.error("Error fetching todos:", error);
+        }
+    }
+
+    fetchTodos();
+
+    async function addItem() {
+        if (!input.value.trim()) { return }
+
+        const newTodo = {
+            title: input.value
+        };
+
+        try {
+            const response = await fetch("http://localhost:3000/api/todos", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(newTodo)
+            });
+
+            if (!response.ok) {
+                throw new Error("Failed to add todo");
+            }
+
+            const createdTodo = await response.json();
+            renderTodo(createdTodo);
+            input.value = "";
+            closeAddMenu();
+        } catch (error) {
+            console.error("Error adding todo:", error);
+        }
+    }
+
+    function renderTodo(todo) {
+        const li = document.createElement('li');
+        li.dataset.id = todo.id
+        li.innerHTML = `${todo.title}
+        <i id="icoDelete" onclick="deleteItem('${todo.id}')">Delete</i>
+        <i id="icoDone" onclick="toggleTodoCompleted('${todo.id}')">Mark as Done</i>`;
+
+        if (todo.completed) {
+            li.classList.add("line-through");
+        }
+        todosList.appendChild(li);
+    }
+
+    function cancelItem() {
+        input.value = ""
+        closeAddMenu();
+    }
+
+    async function deleteItem(id) {
+        try {
+            const response = await fetch(`http://localhost:3000/api/todos/${id}`, {
+                method: "DELETE"
+            });
+
+            if (!response.ok) {
+                throw new Error("Failed to delete todo");
+            }
+
+            todosArray = todosArray.filter(todo => todo.id !== id);
+
+            const li = document.querySelector(`li[data-id="${id}"]`);
+            li.remove();
+        } catch (error) {
+            console.error("Error deleting todo:", error);
+        }
+    }
+
+    async function toggleTodoCompleted(id) {
+        const todo = todosArray.find(todo => todo.id == id);
+        todo.completed = !todo.completed;
+        const li = document.querySelector(`li[data-id="${id}"]`);
+        li.classList.toggle("line-through");
+
+        await fetch(`http://localhost:3000/api/todos/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ completed: todo.completed })
+    });
+    }
+
+    function addMenu() {
+        document.getElementById("addMenu").style.display = "flex";
+    }
+
+    function closeAddMenu() {
+        document.getElementById("addMenu").style.display = "none";
+    }
+
+</script>
+</html>

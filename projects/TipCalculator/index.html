@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        body {
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            user-select: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <input type="text" placeholder="Put the bill amount..." id="billAmount">
+        <input type="range" min="1" max="100" value="50" id="tipAmount">
+        <div>
+            <h2>Tip Amount: $<span id="tipText"></span></h2>
+            <h2>Total: $<span id="totalText"></span></h2>
+        </div>
+    </div>
+</body>
+<script>
+    const billAmount = document.getElementById("billAmount");
+    const tipAmount = document.getElementById("tipAmount");
+    const tipText = document.getElementById("tipText");
+    const totalText = document.getElementById("totalText");
+
+    let amountValue = 0;
+    let tipPercentage = 0;
+
+    billAmount.addEventListener("input", () => {
+        amountValue = parseFloat(billAmount.value) || 0;
+        updateAll();
+    });
+
+    tipAmount.addEventListener("input", () => {
+        tipPercentage = parseFloat(tipAmount.value) || 0;
+        updateAll();
+    });
+
+    function formatNumber(num) {
+        return num.toFixed(2);
+    }
+
+    function calculateTip() {
+        return amountValue * (tipPercentage / 100);
+    }
+
+    function calculateTotal() {
+        return amountValue + calculateTip();
+    }
+
+    function updateAll() {
+        tipText.innerHTML = formatNumber(calculateTip());
+        totalText.innerHTML = formatNumber(calculateTotal());
+    }
+
+</script>
+</html>

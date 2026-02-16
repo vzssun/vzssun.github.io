@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            padding: 0;
+            margin: 0;
+            min-height: 100vh;
+            background-color: rgb(51, 50, 50);
+        }
+
+        header {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: rgb(87, 86, 86);
+        }
+
+        nav {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        li {
+            list-style-type: none;
+        }
+
+        ul {
+            display: flex;
+            gap: 1em;
+        }
+
+        #logo {
+            left: 0;
+            position: absolute;
+        }
+
+        a {
+            padding: 0.5em 1em;
+            color: white;
+            text-decoration: none;
+            transition: 150ms ease;
+            user-select: none;
+        }
+
+        a:hover {
+            background-color: rgb(200, 235, 245);
+            color: rgb(87, 86, 86);
+        }
+
+        button {
+            padding: 0.5em 1em;
+            border: none;
+            background-color: rgb(87, 86, 86);
+            color: white;
+            cursor: pointer;
+            transition: 150ms ease;
+        }
+
+        button:hover {
+            background-color: rgb(200, 235, 245);
+            color: rgb(87, 86, 86);
+        }
+
+        footer {
+            background-color: rgb(87, 86, 86);
+            color: white;
+            text-align: center;
+            padding: 1em;
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+        }
+
+        h1 {
+            color: white; text-align: center; margin-top: 2em;
+        }
+
+        h2 {
+            color: white; text-align: center; margin-top: 1em;
+        }
+
+        section {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 2em;
+            margin-top: 2em;
+        }
+        
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <img id="logo" alt="logo">
+            <ul class="nav_links">
+                <li><a href="#" id="tempLink">Temperature</a></li>
+                <li><a href="#" id="distLink">Distance</a></li>
+                <li><a href="#" id="weightLink">Weight</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <h1>Welcome to the Unit Converter!</h1>
+        <h2>Select a category to start converting units.</h2>
+    </main>
+
+    <section id="converter">
+        <div class="temperature" style="display: none;">
+            <h2>Temperature Converter</h2>
+            <input type="number" id="tempInput" placeholder="Enter temperature">
+            <select id="tempFrom">
+                <option value="celsius">Celsius</option>
+                <option value="fahrenheit">Fahrenheit</option>
+                <option value="kelvin">Kelvin</option>
+            </select>
+            <select id="tempTo">
+                <option value="celsius">Celsius</option>
+                <option value="fahrenheit">Fahrenheit</option>
+                <option value="kelvin">Kelvin</option>
+            </select>
+            <button id="convertTemp">Convert</button>
+        </div>
+
+        <div class="distance" style="display: none;">
+            <h2>Distance Converter</h2>
+            <input type="number" id="distInput" placeholder="Enter distance">
+            <select id="distFrom">
+                <option value="meters">Meters</option>
+                <option value="kilometers">Kilometers</option>
+                <option value="miles">Miles</option>
+            </select>
+            <select id="distTo">
+                <option value="meters">Meters</option>
+                <option value="kilometers">Kilometers</option>
+                <option value="miles">Miles</option>
+            </select>
+            <button id="convertDist">Convert</button>
+        </div>
+
+        <!-- add weight -->
+    </section>
+
+    <footer>
+        &copy; 2026 Unit Converter. All rights reserved.
+    </footer>
+</body>
+<script>
+    const tempLink = document.getElementById('tempLink');
+    const distLink = document.getElementById('distLink');
+    const weightLink = document.getElementById('weightLink');
+    const tempSection = document.querySelector('.temperature');
+    const distSection = document.querySelector('.distance');
+    const tempInput = document.getElementById('tempInput');
+    const tempFrom = document.getElementById('tempFrom');
+    const tempTo = document.getElementById('tempTo');
+    const convertTemp = document.getElementById('convertTemp');
+    const distInput = document.getElementById('distInput');
+    const distFrom = document.getElementById('distFrom');
+    const distTo = document.getElementById('distTo');
+    const convertDist = document.getElementById('convertDist');
+
+    tempLink.addEventListener('click', () => {
+        tempSection.style.display = tempSection.style.display === 'none' ? 'block' : 'none';
+        distSection.style.display = 'none';
+    });
+
+    distLink.addEventListener('click', () => {
+        distSection.style.display = distSection.style.display === 'none' ? 'block' : 'none';
+        tempSection.style.display = 'none';
+    });
+
+    convertTemp.addEventListener('click', () => {
+        const value = parseFloat(tempInput.value);
+        const fromUnit = tempFrom.value;
+        const toUnit = tempTo.value;
+        let result;
+
+        if (fromUnit === 'celsius') {
+            if (toUnit === 'fahrenheit') {
+                result = (value * 9/5) + 32;
+            } else if (toUnit === 'kelvin') {
+                result = value + 273.15;
+            } else {
+                result = value;
+            }
+        } else if (fromUnit === 'fahrenheit') {
+            if (toUnit === 'celsius') {
+                result = (value - 32) * 5/9;
+            } else if (toUnit === 'kelvin') {
+                result = ((value - 32) * 5/9) + 273.15;
+            } else {
+                result = value;
+            }
+        } else if (fromUnit === 'kelvin') {
+            if (toUnit === 'celsius') {
+                result = value - 273.15;
+            } else if (toUnit === 'fahrenheit') {
+                result = ((value - 273.15) * 9/5) + 32;
+            } else {
+                result = value;
+            }
+        }
+
+        alert(`Converted temperature: ${result.toFixed(2)} ${toUnit}`);
+    });
+    
+    convertDist.addEventListener('click', () => {
+        const value = parseFloat(distInput.value);
+        const fromUnit = distFrom.value;
+        const toUnit = distTo.value;
+        let result;
+
+        if (fromUnit === 'meters') {
+            if (toUnit === 'kilometers') {
+                result = value / 1000;
+            } else if (toUnit === 'miles') {
+                result = value / 1609.34;
+            } else {
+                result = value;
+            }
+        } else if (fromUnit === 'kilometers') {
+            if (toUnit === 'meters') {
+                result = value * 1000;
+            } else if (toUnit === 'miles') {
+                result = value / 1.60934;
+            } else {
+                result = value;
+            }
+        } else if (fromUnit === 'miles') {
+            if (toUnit === 'meters') {
+                result = value * 1609.34;
+            } else if (toUnit === 'kilometers') {
+                result = value * 1.60934;
+            } else {
+                result = value;
+            }
+        }
+
+        alert(`Converted distance: ${result.toFixed(2)} ${toUnit}`);
+    });
+
+</script>
+</html>
