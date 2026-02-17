@@ -64,7 +64,7 @@
             transition: 0.2s;
         }
 
-        #todosList i {
+        #todosList button {
             font-style: normal;
             font-size: 12px;
             cursor: pointer;
@@ -74,7 +74,7 @@
             background: rgba(0, 201, 169, 0.1);
         }
 
-        #todosList i:hover {
+        #todosList button:hover {
             background: #00c9a9;
             color: #383739;
         }
@@ -105,6 +105,17 @@
             color: #383739;
         }
 
+        #btns-primary-wrapper {
+            position: relative;
+        }
+
+        #add {
+            position: absolute;
+            font-size: 1em;
+            left: 12em;
+            border-radius: 10em;
+        }
+
         #addMenu {
             display: none;
             width: 300px;
@@ -133,7 +144,7 @@
             <ul id="todosList">
             </ul>
         </div>
-            <div class="btns-primary-wrapper">
+            <div id="btns-primary-wrapper">
                 <button class="btn-primary" id="add" onclick="addMenu()">+</button>
             </div>
         </div>
@@ -197,8 +208,9 @@
         const li = document.createElement('li');
         li.dataset.id = todo.id
         li.innerHTML = `${todo.title}
-        <i id="icoDelete" onclick="deleteItem('${todo.id}')">Delete</i>
-        <i id="icoDone" onclick="toggleTodoCompleted('${todo.id}')">Mark as Done</i>`;
+        <div id="btns-action-wrapper">
+        <button id="icoDelete" onclick="deleteItem('${todo.id}')">Delete</i>
+        <button id="icoDone" onclick="toggleTodoCompleted('${todo.id}')">Mark as Done</i></div>`;
 
         if (todo.completed) {
             li.classList.add("line-through");
