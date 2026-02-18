@@ -59,50 +59,38 @@
 </head>
 <body>
     <div class="container">
-        <h1>Login Page</h1>
+        <h1>Register Page</h1>
         <input type="text" id="username" placeholder="Username">
         <input type="password" id="password" placeholder="Password">
-        <button id="loginButton">Login</button>
-        <p>Don't have an account? <a href="register.html">Register here</a></p>
+        <button id="registerButton">Register</button>
+        <p>Already have an account? <a href="login.html">Login here</a></p>
     </div>
 </body>
 <script>
-    const token = localStorage.getItem('token');
+    const registerButton = document.getElementById('registerButton');
 
-    if (token) {
-        window.location.href = 'index.html';
-    }
-
-    document.getElementById('loginButton').addEventListener('click', function() {
+    registerButton.addEventListener('click', async () => {
         const username = document.getElementById('username').value;
         const password = document.getElementById('password').value;
 
-        if (!username || !password) {
-            alert('Please enter both username and password');
-            return;
-        }
-
-        fetchApi(username, password);
-    });
-
-    const fetchApi = async (username, password) => {
         try {
-            const response = await fetch('https://todo-list-backend-production-762e.up.railway.app/api/auth/login', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+            const response = await fetch("https://todo-list-backend-production-762e.up.railway.app/api/auth/register", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ username, password })
             });
 
-            if (!response.ok) {
-                throw new Error('Login failed');
+            if (response.ok) {
+                alert("Registration successful! Please login.");
+                window.location.href = "login.html";
+            } else {
+                const errorData = await response.json();
+                alert(`Registration failed: ${errorData.message}`);
             }
-
-            const data = await response.json();
-            localStorage.setItem('token', data.token);
-            window.location.href = 'index.html';
         } catch (error) {
-            alert(error.message);
+            console.error("Error during registration:", error);
+            alert("An error occurred during registration. Please try again.");
         }
-    };
+    });
 </script>
 </html>
