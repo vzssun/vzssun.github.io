@@ -173,9 +173,9 @@
                     "Authorization": `Bearer ${token}` }
             });
             if (!response.ok) {
-                throw new Error("Failed to fetch todos")
                 localStorage.removeItem('token');
                 window.location.href = "login.html";
+                throw new Error("Failed to fetch todos")
             }
             todosArray = await response.json();
             console.log(todosArray);
