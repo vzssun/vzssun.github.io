@@ -186,10 +186,7 @@
 
     async function addItem() {
         if (!input.value.trim()) { return }
-
-        const newTodo = {
-            title: input.value
-        };
+        const title = input.value;
 
         try {
             const response = await fetch("https://todo-list-backend-production-762e.up.railway.app/api/todos", {
@@ -198,7 +195,7 @@
                     "Content-Type": "application/json",
                     "Authorization": `Bearer ${token}`
                 },
-                body: JSON.stringify(newTodo)
+                body: JSON.stringify({ title })
             });
 
             if (!response.ok) {
@@ -207,6 +204,7 @@
 
             const createdTodo = await response.json();
             renderTodo(createdTodo);
+            todosArray.push(createdTodo);
             input.value = "";
             closeAddMenu();
         } catch (error) {
