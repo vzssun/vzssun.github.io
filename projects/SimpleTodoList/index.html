@@ -110,9 +110,7 @@
         }
 
         #add {
-            position: absolute;
             font-size: 1em;
-            left: 12em;
             border-radius: 10em;
         }
 
@@ -174,6 +172,11 @@
                 headers: { 
                     "Authorization": `Bearer ${token}` }
             });
+            if (!response.ok) {
+                throw new Error("Failed to fetch todos")
+                localStorage.removeItem('token');
+                window.location.href = "login.html";
+            }
             todosArray = await response.json();
             console.log(todosArray);
             todosArray.forEach(todo => renderTodo(todo));
