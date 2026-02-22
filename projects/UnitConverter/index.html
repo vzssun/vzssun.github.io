@@ -39,11 +39,6 @@
             gap: 1em;
         }
 
-        #logo {
-            left: 0;
-            position: absolute;
-        }
-
         a {
             padding: 0.5em 1em;
             color: white;
@@ -102,7 +97,6 @@
 <body>
     <header>
         <nav>
-            <img id="logo" alt="logo">
             <ul class="nav_links">
                 <li><a href="#" id="tempLink">Temperature</a></li>
                 <li><a href="#" id="distLink">Distance</a></li>
@@ -119,12 +113,15 @@
     <section id="converter">
         <div class="temperature" style="display: none;">
             <h2>Temperature Converter</h2>
+            <label for="tempInput"></label>
             <input type="number" id="tempInput" placeholder="Enter temperature">
+            <label for="tempFrom"></label>
             <select id="tempFrom">
                 <option value="celsius">Celsius</option>
                 <option value="fahrenheit">Fahrenheit</option>
                 <option value="kelvin">Kelvin</option>
             </select>
+            <label for="tempTo"></label>
             <select id="tempTo">
                 <option value="celsius">Celsius</option>
                 <option value="fahrenheit">Fahrenheit</option>
@@ -135,12 +132,15 @@
 
         <div class="distance" style="display: none;">
             <h2>Distance Converter</h2>
+            <label for="distInput"></label>
             <input type="number" id="distInput" placeholder="Enter distance">
+            <label for="distFrom"></label>
             <select id="distFrom">
                 <option value="meters">Meters</option>
                 <option value="kilometers">Kilometers</option>
                 <option value="miles">Miles</option>
             </select>
+            <label for="distTo"></label>
             <select id="distTo">
                 <option value="meters">Meters</option>
                 <option value="kilometers">Kilometers</option>
@@ -149,7 +149,24 @@
             <button id="convertDist">Convert</button>
         </div>
 
-        <!-- add weight -->
+        <div class="weight" style="display: none;">
+            <h2>Weight Converter</h2>
+            <label for="weightInput"></label>
+            <input type="number" id="weightInput" placeholder="Enter weight">
+            <label for="weightFrom"></label>
+            <select id="weightFrom">
+                <option value="kgs">kgs</option>
+                <option value="lbs">lbs</option>
+                <option value="grams">g</option>
+            </select>
+            <label for="weightTo"></label>
+            <select id="weightTo">
+                <option value="kgs">kgs</option>
+                <option value="lbs">lbs</option>
+                <option value="grams">g</option>
+            </select>
+            <button id="convertWeight">Convert</button>
+        </div>
     </section>
 
     <footer>
@@ -160,26 +177,50 @@
     const tempLink = document.getElementById('tempLink');
     const distLink = document.getElementById('distLink');
     const weightLink = document.getElementById('weightLink');
+
     const tempSection = document.querySelector('.temperature');
     const distSection = document.querySelector('.distance');
+    const weightSection = document.querySelector('.weight');
+
     const tempInput = document.getElementById('tempInput');
     const tempFrom = document.getElementById('tempFrom');
     const tempTo = document.getElementById('tempTo');
     const convertTemp = document.getElementById('convertTemp');
+
     const distInput = document.getElementById('distInput');
     const distFrom = document.getElementById('distFrom');
     const distTo = document.getElementById('distTo');
     const convertDist = document.getElementById('convertDist');
 
-    tempLink.addEventListener('click', () => {
-        tempSection.style.display = tempSection.style.display === 'none' ? 'block' : 'none';
-        distSection.style.display = 'none';
-    });
+    const weightInput = document.getElementById('weightInput');
+    const weightFrom = document.getElementById('weightFrom');
+    const weightTo = document.getElementById('weightTo');
+    const convertWeight = document.getElementById('convertWeight');
 
-    distLink.addEventListener('click', () => {
-        distSection.style.display = distSection.style.display === 'none' ? 'block' : 'none';
+    tempLink.addEventListener('click', () => displayCategories('temperature'));
+    distLink.addEventListener('click', () => displayCategories('distance'));
+    weightLink.addEventListener('click', () => displayCategories('weight'));
+
+    function displayCategories(category) {
+
         tempSection.style.display = 'none';
-    });
+        distSection.style.display = 'none';
+        weightSection.style.display = 'none';
+
+        switch (category) {
+            case 'temperature':
+                tempSection.style.display = 'block';
+                break;
+
+            case 'distance':
+                distSection.style.display = 'block';
+                break;
+
+            case 'weight':
+                weightSection.style.display = 'block';
+                break;
+        }
+    }
 
     convertTemp.addEventListener('click', () => {
         const value = parseFloat(tempInput.value);
@@ -187,68 +228,103 @@
         const toUnit = tempTo.value;
         let result;
 
-        if (fromUnit === 'celsius') {
-            if (toUnit === 'fahrenheit') {
-                result = (value * 9/5) + 32;
-            } else if (toUnit === 'kelvin') {
-                result = value + 273.15;
-            } else {
-                result = value;
-            }
-        } else if (fromUnit === 'fahrenheit') {
-            if (toUnit === 'celsius') {
-                result = (value - 32) * 5/9;
-            } else if (toUnit === 'kelvin') {
-                result = ((value - 32) * 5/9) + 273.15;
-            } else {
-                result = value;
-            }
-        } else if (fromUnit === 'kelvin') {
-            if (toUnit === 'celsius') {
-                result = value - 273.15;
-            } else if (toUnit === 'fahrenheit') {
-                result = ((value - 273.15) * 9/5) + 32;
-            } else {
-                result = value;
-            }
+        switch (fromUnit) {
+            case 'celsius':
+                result = toUnit === 'fahrenheit'
+                    ? (value * 9/5) + 32
+                    : toUnit === 'kelvin'
+                        ? value + 273.15
+                        : value;
+                break;
+
+            case 'fahrenheit':
+                result = toUnit === 'celsius'
+                    ? (value - 32) * 5/9
+                    : toUnit === 'kelvin'
+                        ? ((value - 32) * 5/9) + 273.15
+                        : value;
+                break;
+
+            case 'kelvin':
+                result = toUnit === 'celsius'
+                    ? value - 273.15
+                    : toUnit === 'fahrenheit'
+                        ? ((value - 273.15) * 9/5) + 32
+                        : value;
+                break;
         }
 
         alert(`Converted temperature: ${result.toFixed(2)} ${toUnit}`);
     });
-    
+
     convertDist.addEventListener('click', () => {
         const value = parseFloat(distInput.value);
         const fromUnit = distFrom.value;
         const toUnit = distTo.value;
         let result;
 
-        if (fromUnit === 'meters') {
-            if (toUnit === 'kilometers') {
-                result = value / 1000;
-            } else if (toUnit === 'miles') {
-                result = value / 1609.34;
-            } else {
-                result = value;
-            }
-        } else if (fromUnit === 'kilometers') {
-            if (toUnit === 'meters') {
-                result = value * 1000;
-            } else if (toUnit === 'miles') {
-                result = value / 1.60934;
-            } else {
-                result = value;
-            }
-        } else if (fromUnit === 'miles') {
-            if (toUnit === 'meters') {
-                result = value * 1609.34;
-            } else if (toUnit === 'kilometers') {
-                result = value * 1.60934;
-            } else {
-                result = value;
-            }
+        switch (fromUnit) {
+            case 'meters':
+                result = toUnit === 'kilometers'
+                    ? value / 1000
+                    : toUnit === 'miles'
+                        ? value / 1609.34
+                        : value;
+                break;
+
+            case 'kilometers':
+                result = toUnit === 'meters'
+                    ? value * 1000
+                    : toUnit === 'miles'
+                        ? value / 1.60934
+                        : value;
+                break;
+
+            case 'miles':
+                result = toUnit === 'meters'
+                    ? value * 1609.34
+                    : toUnit === 'kilometers'
+                        ? value * 1.60934
+                        : value;
+                break;
         }
 
         alert(`Converted distance: ${result.toFixed(2)} ${toUnit}`);
+    });
+
+    convertWeight.addEventListener('click', () => {
+        const value = parseFloat(weightInput.value);
+        const fromUnit = weightFrom.value;
+        const toUnit = weightTo.value;
+        let result;
+
+        switch (fromUnit) {
+            case 'kgs':
+                result = toUnit === 'grams'
+                    ? value * 1000
+                    : toUnit === 'lbs'
+                        ? value * 2.205
+                        : value;
+                break;
+
+            case 'lbs':
+                result = toUnit === 'kgs'
+                    ? value / 2.205
+                    : toUnit === 'grams'
+                        ? value * 453.6
+                        : value;
+                break;
+
+            case 'grams':
+                result = toUnit === 'kgs'
+                    ? value / 1000
+                    : toUnit === 'lbs'
+                        ? value / 453.6
+                        : value;
+                break;
+        }
+
+        alert(`Converted weight: ${result.toFixed(2)} ${toUnit}`);
     });
 
 </script>
